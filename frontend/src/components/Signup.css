@@ -1,0 +1,109 @@
+/* Signup.css - Expanding upon existing index.css patterns */
+.email-otp-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.email-otp-row .form-input {
+    flex: 1;
+}
+
+.otp-btn {
+    background-color: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
+    padding: 0 16px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.otp-btn:hover:not(:disabled) {
+    background-color: rgba(var(--primary-rgb), 0.2);
+    transform: translateY(-1px);
+}
+
+.otp-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--surface-light);
+    color: var(--text-muted);
+    border-color: var(--border-color);
+}
+
+.verify-btn {
+    background-color: var(--success);
+    color: white;
+    border-color: transparent;
+}
+
+.verify-btn:hover {
+    background-color: #0bd185;
+    color: white;
+}
+
+.password-errors {
+    list-style-type: none;
+    padding: 0;
+    margin: 8px 0 0 0;
+    font-size: 0.85rem;
+    color: var(--danger);
+    text-align: left;
+}
+
+.password-errors li {
+    margin-bottom: 2px;
+}
+
+.success-message {
+    color: var(--success);
+    font-size: 0.9rem;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.error-message {
+    color: var(--danger);
+    font-size: 0.9rem;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.p-0 {
+    padding: 0;
+}
+
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.signup-submit-btn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.login-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.login-link:hover {
+    color: var(--primary-light);
+    text-decoration: underline;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message {
+    animation: fadeIn 0.3s ease forwards;
+}
