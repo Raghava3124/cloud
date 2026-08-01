@@ -269,7 +269,7 @@ const Dashboard = () => {
 
                 {isLoading ? (
                     <div className="flex items-center justify-center py-12">
-                        <div className="loader" style={{ width: '50px', height: '50px', borderWidth: '4px' }}></div>
+                        <div className="loader"></div>
                     </div>
                 ) : (
                     <FileGrid

@@ -326,16 +326,56 @@ router.get('/download/:id', async (req, res) => {
 
         res.setHeader('Content-Disposition', `attachment; filename="${file.fileName}"`);
         res.setHeader('Content-Type', file.fileType);
+        res.setHeader('Content-Length', file.fileSize);
 
-        const iter = currentClient.iterDownload({
-            file: messages[0].media,
-            requestSize: 1024 * 1024,
-        });
+        const fileSize = file.fileSize;
+        const chunkSize = 1024 * 1024; // 1MB chunks
+        const maxConcurrent = 4; // Fetch 4 chunks in parallel
+        
+        const activeTasks = new Map();
+        let nextFetchIndex = 0;
+        let nextPipeIndex = 0;
+        const totalChunks = Math.ceil(fileSize / chunkSize);
 
-        for await (const chunk of iter) {
-            res.write(chunk);
-        }
-        res.end();
+        const fetchChunkTask = async (index) => {
+            const offset = index * chunkSize;
+            const size = Math.min(chunkSize, fileSize - offset);
+            
+            const iter = currentClient.iterDownload({
+                file: messages[0].media,
+                offset: bigInt(offset),
+                requestSize: size,
+            });
+            let buffers = [];
+            let total = 0;
+            for await (const chunk of iter) {
+                buffers.push(chunk);
+                total += chunk.length;
+                if (total >= size) break;
+            }
+            return Buffer.concat(buffers).slice(0, size);
+        };
+
+        const downloadLoop = async () => {
+            while (nextPipeIndex < totalChunks) {
+                // Ensure maxConcurrent tasks are running
+                while (activeTasks.size < maxConcurrent && nextFetchIndex < totalChunks) {
+                    const taskIndex = nextFetchIndex++;
+                    activeTasks.set(taskIndex, fetchChunkTask(taskIndex));
+                }
+
+                // Wait for the specific chunk we need to pipe next to maintain order
+                if (activeTasks.has(nextPipeIndex)) {
+                    const chunkBuffer = await activeTasks.get(nextPipeIndex);
+                    res.write(chunkBuffer);
+                    activeTasks.delete(nextPipeIndex);
+                    nextPipeIndex++;
+                }
+            }
+            res.end();
+        };
+
+        await downloadLoop();
     } catch (error) {
         console.error('Download error:', error);
         if (!res.headersSent) {
@@ -395,7 +435,7 @@ router.get('/stream/:id', async (req, res) => {
         const iter = currentClient.iterDownload({
             file: messages[0].media,
             offset: bigInt(start),
-            requestSize: 1024 * 512, // 512kb chunks for smoother video buffering
+            requestSize: 1024 * 1024, // Increased to 1MB chunks for smoother video buffering and fewer network round-trips
         });
 
         let pumpedBytes = 0;

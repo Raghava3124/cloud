@@ -81,7 +81,7 @@ const Login = () => {
                     {error && <div className="error-text mb-2 text-center">{error}</div>}
 
                     <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={isLoading}>
-                        {isLoading ? <div className="loader"></div> : 'Sign In'}
+                        {isLoading ? <div className="btn-loader"></div> : 'Sign In'}
                     </button>
                 </form>
 

@@ -227,8 +227,8 @@ body {
   max-width: 440px;
 }
 
-/* Loading Spinner */
-.loader {
+/* Loading Spinner for Buttons */
+.btn-loader {
   border: 3px solid rgba(255,255,255,0.1);
   border-top: 3px solid var(--primary);
   border-radius: 50%;
@@ -240,6 +240,33 @@ body {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Page Loader */
+.loader {
+  width: 108px;
+  height: 60px;
+  color: #269af2;
+  --c: radial-gradient(farthest-side,currentColor 96%,#0000);
+  background: 
+    var(--c) 100% 100% /30% 60%,
+    var(--c) 70%  0    /50% 100%,
+    var(--c) 0    100% /36% 68%,
+    var(--c) 27%  18%  /26% 40%,
+    linear-gradient(currentColor 0 0) bottom/67% 58%;
+  background-repeat: no-repeat;
+  position: relative;
+}
+.loader:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  opacity: 0.4;
+  animation: l7 1s infinite;
+}
+@keyframes l7 {
+  to {transform:scale(1.8);opacity:0}
 }
 
 /* Utility classes */

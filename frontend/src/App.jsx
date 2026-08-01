@@ -8,7 +8,7 @@ import Dashboard from './components/Dashboard';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="flex items-center justify-center min-h-screen" style={{ minHeight: '100vh' }}><div className="loader"></div></div>;
   if (!user) return <Navigate to="/login" />;
   return children;
 };

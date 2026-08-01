@@ -216,7 +216,7 @@ const Signup = () => {
                     </div>
 
                     <button type="submit" className="btn btn-primary mt-4 signup-submit-btn" disabled={loading}>
-                        {loading ? <div className="loader mx-auto"></div> : "Sign Up"}
+                        {loading ? <div className="btn-loader mx-auto"></div> : "Sign Up"}
                     </button>
                 </form>
 

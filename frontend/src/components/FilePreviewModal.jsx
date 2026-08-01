@@ -4,6 +4,8 @@ import { formatSize } from '../utils';
 import { API_URL } from '../config';
 
 const FilePreviewModal = ({ file, onClose }) => {
+    const [isMediaLoading, setIsMediaLoading] = useState(true);
+
     if (!file) return null;
 
     const streamUrl = `${API_URL}/api/files/stream/${file._id}`;
@@ -71,29 +73,39 @@ const FilePreviewModal = ({ file, onClose }) => {
                 alignItems: 'center', 
                 justifyContent: 'center',
                 padding: '6rem 2rem 2rem',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                position: 'relative'
             }}>
+                {isMediaLoading && (isVideo || isImage || isAudio || isPdf || isText) && (
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1 }}>
+                        <div className="loader"></div>
+                    </div>
+                )}
+                
                 {isVideo ? (
                     <video 
                         controls 
                         autoPlay 
-                        style={{ maxWidth: '95%', maxHeight: '95%', borderRadius: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}
+                        onLoadedData={() => setIsMediaLoading(false)}
+                        style={{ maxWidth: '95%', maxHeight: '95%', borderRadius: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', opacity: isMediaLoading ? 0 : 1, transition: 'opacity 0.3s' }}
                         src={streamUrl} 
                     />
                 ) : isImage ? (
                     <img 
                         src={streamUrl} 
                         alt={file.fileName}
-                        style={{ maxWidth: '95%', maxHeight: '95%', borderRadius: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', objectFit: 'contain' }}
+                        onLoad={() => setIsMediaLoading(false)}
+                        style={{ maxWidth: '95%', maxHeight: '95%', borderRadius: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', objectFit: 'contain', opacity: isMediaLoading ? 0 : 1, transition: 'opacity 0.3s' }}
                     />
                 ) : isAudio ? (
-                    <div style={{ background: 'var(--card-bg)', padding: '4rem', borderRadius: '24px', textAlign: 'center', border: '1px solid var(--border)' }}>
-                         <audio controls autoPlay src={streamUrl} style={{ marginTop: '1rem', width: '350px' }} />
+                    <div style={{ background: 'var(--card-bg)', padding: '4rem', borderRadius: '24px', textAlign: 'center', border: '1px solid var(--border)', opacity: isMediaLoading ? 0 : 1, transition: 'opacity 0.3s' }}>
+                         <audio controls autoPlay onCanPlay={() => setIsMediaLoading(false)} src={streamUrl} style={{ marginTop: '1rem', width: '350px' }} />
                     </div>
                 ) : isPdf || isText ? (
-                    <div style={{ width: '90%', height: '95%', background: '#fff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>
+                    <div style={{ width: '90%', height: '95%', background: '#fff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)', opacity: isMediaLoading ? 0 : 1, transition: 'opacity 0.3s' }}>
                         <iframe 
                             src={`${streamUrl}#toolbar=1&navpanes=0&scrollbar=1&zoom=100`} 
+                            onLoad={() => setIsMediaLoading(false)}
                             style={{ width: '100%', height: '100%', border: 'none' }}
                             title={file.fileName}
                         />
