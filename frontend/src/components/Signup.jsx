@@ -24,6 +24,13 @@ const Signup = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    // OTP States
+    const [otp, setOtp] = useState("");
+    const [otpSent, setOtpSent] = useState(false);
+    const [otpVerified, setOtpVerified] = useState(false);
+    const [sendingOtp, setSendingOtp] = useState(false);
+    const [verifyingOtp, setVerifyingOtp] = useState(false);
+
     // Password validation function
     const validatePassword = (password) => {
         let errors = [];
@@ -47,6 +54,46 @@ const Signup = () => {
         }
     };
 
+    const handleSendOtp = async () => {
+        if (!formData.email) {
+            setMessage("❌ Please enter an email address first.");
+            return;
+        }
+        setSendingOtp(true);
+        setMessage("");
+        try {
+            const res = await axios.post(`${API_URL}/api/auth/send-otp`, { email: formData.email });
+            if (res.status === 200) {
+                setOtpSent(true);
+                setMessage("✅ OTP sent to your email.");
+            }
+        } catch (error) {
+            setMessage(`❌ ${error.response?.data?.error || "Failed to send OTP."}`);
+        } finally {
+            setSendingOtp(false);
+        }
+    };
+
+    const handleVerifyOtp = async () => {
+        if (!otp) {
+            setMessage("❌ Please enter the OTP.");
+            return;
+        }
+        setVerifyingOtp(true);
+        setMessage("");
+        try {
+            const res = await axios.post(`${API_URL}/api/auth/verify-otp`, { email: formData.email, otp });
+            if (res.status === 200) {
+                setOtpVerified(true);
+                setMessage("✅ Email verified successfully!");
+            }
+        } catch (error) {
+            setMessage(`❌ ${error.response?.data?.error || "Invalid OTP."}`);
+        } finally {
+            setVerifyingOtp(false);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -54,6 +101,12 @@ const Signup = () => {
 
         if (!termsAccepted) {
             setMessage("❌ Please accept the Terms and Conditions to proceed.");
+            setLoading(false);
+            return;
+        }
+
+        if (!otpVerified) {
+            setMessage("❌ Please verify your email with OTP first.");
             setLoading(false);
             return;
         }
@@ -130,7 +183,7 @@ const Signup = () => {
                     </div>
 
                     <div className="form-group">
-                        <div className="input-box email-otp-row">
+                        <div className="input-box email-otp-row" style={{ display: 'flex', gap: '10px' }}>
                             <div style={{ position: 'relative', flex: 1 }}>
                                 <Mail size={18} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-muted)' }} />
                                 <input
@@ -142,10 +195,46 @@ const Signup = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
+                                    disabled={otpVerified}
                                 />
                             </div>
+                            {!otpVerified && (
+                                <button 
+                                    type="button" 
+                                    className="btn btn-secondary" 
+                                    onClick={handleSendOtp} 
+                                    disabled={sendingOtp || !formData.email}
+                                    style={{ whiteSpace: 'nowrap', padding: '0 1rem' }}
+                                >
+                                    {sendingOtp ? "Sending..." : otpSent ? "Resend OTP" : "Send OTP"}
+                                </button>
+                            )}
                         </div>
                     </div>
+
+                    {otpSent && !otpVerified && (
+                        <div className="form-group">
+                            <div className="input-box email-otp-row" style={{ display: 'flex', gap: '10px' }}>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    placeholder="Enter 6-digit OTP"
+                                    value={otp}
+                                    onChange={(e) => setOtp(e.target.value)}
+                                    maxLength="6"
+                                    style={{ flex: 1 }}
+                                />
+                                <button 
+                                    type="button" 
+                                    className="btn btn-primary" 
+                                    onClick={handleVerifyOtp}
+                                    disabled={verifyingOtp || otp.length < 6}
+                                >
+                                    {verifyingOtp ? "Verifying..." : "Verify"}
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
 
                     <div className="form-group">
