@@ -7,6 +7,7 @@ import UploadArea from './UploadArea';
 import FileGrid from './FileGrid';
 import { formatSize } from '../utils';
 import FilePreviewModal from './FilePreviewModal';
+import { API_URL } from '../config';
 
 const Dashboard = () => {
     const { user, logout } = useContext(AuthContext);
@@ -28,15 +29,15 @@ const Dashboard = () => {
             const headers = { Authorization: `Bearer ${token}` };
 
             // Get Active files
-            const res = await axios.get('http://localhost:5000/api/files', { headers });
+            const res = await axios.get(`${API_URL}/api/files`, { headers });
             setFiles(res.data);
 
             // Get Trashed files
-            const trashedRes = await axios.get('http://localhost:5000/api/files/trashed', { headers });
+            const trashedRes = await axios.get(`${API_URL}/api/files/trashed`, { headers });
             setTrashedFiles(trashedRes.data);
 
             // Get Total Storage
-            const storageRes = await axios.get('http://localhost:5000/api/files/storage', { headers });
+            const storageRes = await axios.get(`${API_URL}/api/files/storage`, { headers });
             setTotalStorage(storageRes.data.totalBytes);
 
         } catch (err) {
@@ -70,15 +71,15 @@ const Dashboard = () => {
             const token = localStorage.getItem('token');
 
             // Listen to Live Telegram SSE updates proactively
-            evtSource = new EventSource(`http://localhost:5000/api/files/progress/${uploadId}`);
+            evtSource = new EventSource(`${API_URL}/api/files/progress/${uploadId}`);
             let tgLastTime = Date.now();
             let tgLastPercentage = 0;
 
             evtSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 if (data.status === 'uploading' && data.progress !== undefined) {
-                    // Start rendering Stage 2 exactly when Telegram is pushing
-                    setUploadStatus('Stage 2: Securing to Telegram Clouds...');
+                    // Start rendering Stage 2 exactly when Cloud is pushing
+                    setUploadStatus('Stage 2: Securing to Cloud Servers...');
                     setUploadProgress(data.progress);
                     
                     const now = Date.now();
@@ -96,7 +97,7 @@ const Dashboard = () => {
                 }
             };
 
-            await axios.post('http://localhost:5000/api/files/upload', formData, {
+            await axios.post(`${API_URL}/api/files/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -149,13 +150,13 @@ const Dashboard = () => {
     };
 
     const handleDownload = (fileId) => {
-        window.open(`http://localhost:5000/api/files/download/${fileId}`, '_blank');
+        window.open(`${API_URL}/api/files/download/${fileId}`, '_blank');
     };
 
     const handleDelete = async (fileId) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/api/files/${fileId}`, {
+            await axios.delete(`${API_URL}/api/files/${fileId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success('File moved to trash.');
@@ -169,7 +170,7 @@ const Dashboard = () => {
     const handleRestore = async (fileId) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`http://localhost:5000/api/files/restore/${fileId}`, {}, {
+            await axios.put(`${API_URL}/api/files/restore/${fileId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success('File restored successfully.');
@@ -185,7 +186,7 @@ const Dashboard = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/api/files/permanent/${fileId}`, {
+            await axios.delete(`${API_URL}/api/files/permanent/${fileId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success('File deleted permanently.');

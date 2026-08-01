@@ -40,7 +40,7 @@ router.post('/send-otp', async (req, res) => {
             from: process.env.EMAIL_USER,
             to: email,
             subject: 'SkyVault - Your Verification OTP',
-            text: `Your OTP for TeleCloud signup is: ${otp}. It will expire in 5 minutes.`
+            text: `Your OTP for SkyVault signup is: ${otp}. It will expire in 5 minutes.`
         };
 
         await transporter.sendMail(mailOptions);

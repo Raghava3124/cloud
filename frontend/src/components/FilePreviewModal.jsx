@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { X, FileText, DownloadCloud, AlertCircle, Loader } from 'lucide-react';
 import { formatSize } from '../utils';
+import { API_URL } from '../config';
 
 const FilePreviewModal = ({ file, onClose }) => {
     if (!file) return null;
 
-    const streamUrl = `http://localhost:5000/api/files/stream/${file._id}`;
+    const streamUrl = `${API_URL}/api/files/stream/${file._id}`;
     
     const isVideo = file.fileType.startsWith('video/');
     const isImage = file.fileType.startsWith('image/');
@@ -105,7 +106,7 @@ const FilePreviewModal = ({ file, onClose }) => {
                         <h3 style={{ fontSize: '1.6rem', marginBottom: '1.5rem' }}>Preview Not Available</h3>
                         <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>This file type cannot be previewed directly in the browser.</p>
                         <a 
-                            href={`http://localhost:5000/api/files/download/${file._id}`}
+                            href={`${API_URL}/api/files/download/${file._id}`}
                             target="_blank" 
                             rel="noreferrer"
                             className="btn btn-primary"
