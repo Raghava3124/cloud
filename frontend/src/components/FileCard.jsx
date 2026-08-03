@@ -13,15 +13,16 @@ const getFileIcon = (mimeType) => {
 const FileCard = ({ file, viewMode, layout, onDownload, onDelete, onRestore, onPermanentDelete, onFileClick }) => {
     const [thumbError, setThumbError] = useState(false);
     
-    const isMedia = file.fileType.startsWith('image/') || file.fileType.startsWith('video/');
+    // Only attempt to show inline previews for Images to prevent massive video buffering in the grid
+    const isImage = file.fileType.startsWith('image/');
 
     return (
         <div className="file-card" style={{ opacity: viewMode === 'trash' ? 0.7 : 1 }}>
             <div className="flex items-center gap-4" style={{ cursor: 'pointer', flex: layout === 'list' ? 1 : 'unset' }} onClick={onFileClick}>
-                <div className="file-icon" style={{ filter: viewMode === 'trash' ? 'grayscale(100%)' : 'none', overflow: 'hidden', padding: (isMedia && !thumbError) ? 0 : '12px' }}>
-                    {(isMedia && !thumbError) ? (
+                <div className="file-icon" style={{ filter: viewMode === 'trash' ? 'grayscale(100%)' : 'none', overflow: 'hidden', padding: (isImage && !thumbError) ? 0 : '12px' }}>
+                    {(isImage && !thumbError) ? (
                         <img 
-                            src={`${API_URL}/api/files/thumbnail/${file._id}`} 
+                            src={`${API_URL}/api/files/stream/${file._id}`} 
                             alt="thumbnail" 
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             onError={() => setThumbError(true)}
