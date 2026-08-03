@@ -25,6 +25,11 @@ const fileSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    folderId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Folder',
+        default: null
+    },
     uploadDate: {
         type: Date,
         default: Date.now

@@ -150,7 +150,8 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
             fileSize: req.file.size,
             telegramFileId: msg.id.toString(), 
             telegramMessageId: msg.id,         
-            userEmail: req.user.email
+            userEmail: req.user.email,
+            folderId: req.body.folderId || null
         });
 
         await newFile.save();
@@ -174,7 +175,16 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
 // Get user's active files
 router.get('/', authMiddleware, async (req, res) => {
     try {
-        const files = await File.find({ userEmail: req.user.email, isDeleted: false }).sort({ uploadDate: -1 });
+        const folderId = req.query.folderId || null;
+        const query = { userEmail: req.user.email, isDeleted: false };
+        
+        if (folderId === 'null' || !folderId) {
+            query.folderId = null;
+        } else {
+            query.folderId = folderId;
+        }
+
+        const files = await File.find(query).sort({ uploadDate: -1 });
         res.json(files);
     } catch (error) {
         console.error('Fetch files error:', error);
@@ -496,6 +506,45 @@ router.get('/preview-text/:id', async (req, res) => {
     } catch (error) {
         console.error('Text extraction error:', error);
         res.status(500).json({ error: 'Server error during text extraction' });
+    }
+});
+
+// Get native thumbnail from Telegram
+router.get('/thumbnail/:id', async (req, res) => {
+    try {
+        const file = await File.findById(req.params.id);
+        if (!file) return res.status(404).json({ error: 'File not found' });
+
+        const currentClient = await getClient();
+        if (!currentClient || !process.env.TELEGRAM_CHAT_ID) {
+            return res.status(500).json({ error: 'Telegram MTProto client not configured yet.' });
+        }
+
+        const messages = await currentClient.getMessages(Number(process.env.TELEGRAM_CHAT_ID), {
+            ids: [file.telegramMessageId]
+        });
+
+        if (!messages || messages.length === 0 || !messages[0].media) {
+            return res.status(404).json({ error: 'Media not found' });
+        }
+
+        // GramJS thumb: 1 downloads the thumbnail representation if it exists
+        const buffer = await currentClient.downloadMedia(messages[0].media, {
+            thumb: 1,
+            workers: 1
+        });
+
+        if (buffer && buffer.length > 0) {
+            res.setHeader('Content-Type', 'image/jpeg');
+            res.setHeader('Cache-Control', 'public, max-age=86400');
+            return res.send(buffer);
+        } else {
+            // If no thumb is available, fallback or 404
+            return res.status(404).json({ error: 'Thumbnail not available' });
+        }
+    } catch (error) {
+        console.error('Thumbnail fetch error:', error);
+        res.status(500).json({ error: 'Server error during thumbnail fetch' });
     }
 });
 
