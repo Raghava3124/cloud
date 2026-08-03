@@ -39,9 +39,6 @@ const UploadArea = ({ onFileUpload, isUploading, uploadProgress, uploadStatus, u
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
-            onClick={() => {
-                if (!isUploading) fileInputRef.current.click() 
-            }}
             style={{ 
                 cursor: isUploading ? 'default' : 'pointer',
                 position: 'relative',
@@ -62,8 +59,16 @@ const UploadArea = ({ onFileUpload, isUploading, uploadProgress, uploadStatus, u
             <input
                 type="file"
                 ref={fileInputRef}
-                style={{ display: 'none' }}
+                style={{
+                    position: 'absolute',
+                    top: 0, left: 0, width: '100%', height: '100%',
+                    opacity: 0,
+                    cursor: isUploading ? 'default' : 'pointer',
+                    zIndex: isUploading ? -1 : 10,
+                    outline: 'none'
+                }}
                 onChange={handleChange}
+                disabled={isUploading}
             />
             
             {/* Subtle animated background glow */}
