@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { LogOut, UploadCloud, Trash2, HardDrive, AlertCircle } from 'lucide-react';
+import { LogOut, UploadCloud, Trash2, HardDrive, AlertCircle, User, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import UploadArea from './UploadArea';
 import FileGrid from './FileGrid';
@@ -14,6 +14,7 @@ const Dashboard = () => {
     const [files, setFiles] = useState([]);
     const [trashedFiles, setTrashedFiles] = useState([]);
     const [viewMode, setViewMode] = useState('active'); // 'active' | 'trash'
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [totalStorage, setTotalStorage] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -204,20 +205,75 @@ const Dashboard = () => {
                     <UploadCloud className="text-primary" size={28} />
                     <h2 className="gradient-text" style={{ margin: 0 }}>TeleCloud</h2>
 
-                    <div className="flex items-center gap-2 ml-4" style={{ background: 'rgba(var(--primary-rgb), 0.1)', padding: '6px 12px', borderRadius: '20px', fontSize: '0.85rem' }}>
+                    <div className="hidden-mobile flex items-center gap-2 ml-4" style={{ background: 'rgba(var(--primary-rgb), 0.1)', padding: '6px 12px', borderRadius: '20px', fontSize: '0.85rem' }}>
                         <HardDrive size={16} className="text-primary" style={{ color: "var(--primary)" }} />
                         <span style={{ color: "var(--primary)", fontWeight: 500 }}>
                             {formatSize(totalStorage)} Used
                         </span>
                     </div>
                 </div>
-                <div className="flex items-center gap-4">
+                
+                {/* Desktop Right Side */}
+                <div className="hidden-mobile flex items-center gap-4">
                     <span style={{ color: 'var(--text-muted)' }}>{user.email}</span>
                     <button className="btn btn-secondary" onClick={logout} style={{ padding: '0.5rem 1rem' }}>
                         <LogOut size={16} /> Logout
                     </button>
                 </div>
+
+                {/* Mobile Profile Icon */}
+                <div className="show-mobile">
+                    <button onClick={() => setShowMobileMenu(true)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', color: 'var(--text-main)', cursor: 'pointer', padding: '8px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                        <User size={24} />
+                    </button>
+                </div>
             </nav>
+
+            {/* Mobile Menu Modal */}
+            {showMobileMenu && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(10px)',
+                    zIndex: 9999, display: 'flex', flexDirection: 'column',
+                    padding: '2rem'
+                }}>
+                    <button onClick={() => setShowMobileMenu(false)} style={{ alignSelf: 'flex-end', background: 'none', border: 'none', color: 'var(--text-main)', cursor: 'pointer', marginBottom: '2rem' }}>
+                        <X size={32} />
+                    </button>
+
+                    <div className="glass-panel" style={{ padding: '2rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '1.5rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{ width: '72px', height: '72px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem auto' }}>
+                                <User size={36} color="white" />
+                            </div>
+                            <h3 style={{ margin: 0, color: 'white', fontSize: '1.4rem' }}>{user.name || 'User'}</h3>
+                            <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.9rem', marginTop: '0.25rem' }}>{user.email}</p>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(59, 130, 246, 0.1)', padding: '1.25rem', borderRadius: '12px' }}>
+                            <HardDrive size={28} className="text-primary" />
+                            <div>
+                                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Storage Used</div>
+                                <div style={{ color: "var(--primary)", fontWeight: 'bold', fontSize: '1.4rem' }}>{formatSize(totalStorage)}</div>
+                            </div>
+                        </div>
+
+                        <button 
+                            onClick={() => { 
+                                setViewMode('trash'); 
+                                setShowMobileMenu(false); 
+                            }} 
+                            style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', padding: '1.25rem', borderRadius: '12px', border: 'none', cursor: 'pointer', fontSize: '1.1rem', fontWeight: 600, transition: 'all 0.2s' }}
+                        >
+                            <Trash2 size={24} /> Recycle Bin
+                        </button>
+
+                        <button onClick={logout} style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--border)', color: 'var(--text-main)', padding: '1.25rem', borderRadius: '12px', cursor: 'pointer', fontSize: '1.1rem', fontWeight: 600, marginTop: '1rem', transition: 'all 0.2s' }}>
+                            <LogOut size={24} /> Logout
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <UploadArea 
                 onFileUpload={handleFileUpload} 

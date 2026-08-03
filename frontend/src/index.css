@@ -282,3 +282,25 @@ body {
 .gap-2 { gap: 0.5rem; }
 .gap-4 { gap: 1rem; }
 .error-text { color: var(--danger); font-size: 0.9rem; margin-top: 0.5rem; }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .hidden-mobile {
+    display: none !important;
+  }
+  .show-mobile {
+    display: block !important;
+  }
+  .app-container {
+    padding: 1rem;
+  }
+  .navbar {
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .show-mobile {
+    display: none !important;
+  }
+}
