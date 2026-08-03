@@ -31,11 +31,11 @@ const FileCard = ({ file, viewMode, layout, onDownload, onDelete, onRestore, onP
                         getFileIcon(file.fileType)
                     )}
                 </div>
-                <div className="file-info" style={{ flex: 1, minWidth: 0, display: layout === 'list' ? 'flex' : 'block', alignItems: 'center', gap: '2rem' }}>
-                    <div className="file-name" title={file.fileName} style={{ textDecoration: viewMode === 'trash' ? 'line-through' : 'none', flex: layout === 'list' ? 1 : 'unset' }}>
+                <div className="file-info" style={{ flex: 1, minWidth: 0 }}>
+                    <div className="file-name" title={file.fileName} style={{ textDecoration: viewMode === 'trash' ? 'line-through' : 'none' }}>
                         {file.fileName}
                     </div>
-                    <div className="file-meta" style={{ display: 'flex', flexDirection: layout === 'list' ? 'row' : 'column', gap: layout === 'list' ? '2rem' : '4px', marginTop: layout === 'list' ? 0 : '4px' }}>
+                    <div className="file-meta" style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
                         <span>
                             {viewMode === 'active' ? 'Uploaded on' : 'Deleted on'}: {new Date(viewMode === 'trash' ? file.deletedAt : file.uploadDate).toLocaleDateString()}
                         </span>

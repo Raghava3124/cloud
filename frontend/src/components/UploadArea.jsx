@@ -97,7 +97,7 @@ const UploadArea = ({ onFileUpload, isUploading, uploadProgress, uploadStatus, u
                         </div>
 
                         <div>
-                            <h3 style={{ fontSize: '1.4rem', color: 'white', marginBottom: '0.25rem', fontWeight: 600 }}>
+                            <h3 style={{ fontSize: '1.4rem', color: 'var(--text-main)', marginBottom: '0.25rem', fontWeight: 600 }}>
                                 {uploadStatus || 'Uploading...'}
                             </h3>
                             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
@@ -167,7 +167,7 @@ const UploadArea = ({ onFileUpload, isUploading, uploadProgress, uploadStatus, u
                         </div>
                         
                         <div>
-                            <h3 style={{ fontSize: '1.6rem', fontWeight: 700, color: 'white', marginBottom: '0.5rem' }}>
+                            <h3 style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.5rem' }}>
                                 {dragActive ? 'Drop it like it\'s hot!' : 'Drag & Drop files here'}
                             </h3>
                             <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>
