@@ -1,1 +1,1 @@
-export const API_URL = "https://vellagemart.store";
+export const API_URL = "http://localhost:5001";
