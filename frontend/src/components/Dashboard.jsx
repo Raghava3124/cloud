@@ -305,7 +305,7 @@ const Dashboard = () => {
             <nav className="navbar" style={{ padding: '1rem 2rem' }}>
                 <div className="flex items-center gap-4">
                     <UploadCloud className="text-primary" size={28} />
-                    <h2 className="gradient-text" style={{ margin: 0 }}>TeleCloud</h2>
+                    <h2 className="gradient-text" style={{ margin: 0 }}>SkyVault</h2>
 
                     <div className="hidden-mobile flex items-center gap-2 ml-4" style={{ background: 'rgba(var(--primary-rgb), 0.1)', padding: '6px 12px', borderRadius: '20px', fontSize: '0.85rem' }}>
                         <HardDrive size={16} className="text-primary" style={{ color: "var(--primary)" }} />

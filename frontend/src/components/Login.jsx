@@ -36,7 +36,7 @@ const Login = () => {
                 <div className="text-center mb-4">
                     <Cloud size={48} className="text-primary mb-2 gradient-text" style={{ color: "var(--primary)" }} />
                     <h1 className="gradient-text" style={{ fontSize: '2rem' }}>Welcome Back</h1>
-                    <p style={{ color: 'var(--text-muted)' }}>Sign in to your TeleCloud account</p>
+                    <p style={{ color: 'var(--text-muted)' }}>Sign in to your SkyVault account</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>

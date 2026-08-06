@@ -15,7 +15,7 @@ const router = express.Router();
 const uploadProgressMap = new Map();
 
 // Use disk storage instead of memory to support files up to 2GB without crashing the server
-const uploadDest = path.join(os.tmpdir(), 'telecloud-uploads');
+const uploadDest = path.join(os.tmpdir(), 'skyvault-uploads');
 if (!fs.existsSync(uploadDest)) {
     fs.mkdirSync(uploadDest, { recursive: true });
 }
